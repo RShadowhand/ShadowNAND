@@ -335,7 +335,7 @@ static int SD_Init()
 {
     inittarget(&handleSD);
 
-    ioDelay(1u << 18); //Card needs a little bit of time to be detected, it seems
+    ioDelay(1u << 19); //Card needs a little bit of time to be detected, it seems
     
     //If not inserted
     if (!(*((vu16*)0x1000601c) & TMIO_STAT0_SIGSTATE)) return -1;

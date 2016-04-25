@@ -26,16 +26,30 @@ void main()
     FIL payload;
     unsigned int br;
 
+    const char firstPayload[] = "bootmgr.bin";
+    const char secondPayload[] = "arm9loaderhax.bin";
+
     f_mount(&fs, "0:", 0); //This never fails due to deferred mounting
-    if(f_open(&payload, "arm9loaderhax.bin", FA_READ) == FR_OK)
+    if(f_open(&payload, firstPayload, FA_READ) == FR_OK)
     {
-        setFramebuffers();
-        ownArm11();
-        clearScreens();
-        turnOnBacklight();
+        doStuff();
+        f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
+        ((void (*)())PAYLOAD_ADDRESS)();
+    }
+    else if(f_open(&payload, secondPayload, FA_READ) == FR_OK)
+    {
+        doStuff();
         f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
         ((void (*)())PAYLOAD_ADDRESS)();
     }
 
     i2cWriteRegister(I2C_DEV_MCU, 0x20, 1);
+}
+
+void doStuff()
+{
+	setFramebuffers();
+	ownArm11();
+	clearScreens();
+	turnOnBacklight();
 }
