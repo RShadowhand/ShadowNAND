@@ -3,6 +3,8 @@ out
 payload_stage1/build
 payload_stage2/build
 payload_stage2/data
+payload_altstage2/build
+payload_altstage2/data
 *.elf
 *.bin
 *.o
