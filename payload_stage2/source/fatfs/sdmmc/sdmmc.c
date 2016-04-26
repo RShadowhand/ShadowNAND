@@ -194,22 +194,6 @@ u32 __attribute__((noinline)) sdmmc_nand_readsectors(u32 sector_no, u32 numsecto
     return geterror(&handleNAND);
 }
 
-u32 __attribute__((noinline)) sdmmc_nand_writesectors(u32 sector_no, u32 numsectors, vu8 *in) //experimental
-{
-    if (handleNAND.isSDHC == 0)
-        sector_no <<= 9;
-    inittarget(&handleNAND);
-    sdmmc_write16(REG_SDSTOP,0x100);
-
-    sdmmc_write16(REG_SDBLKCOUNT,numsectors);
-
-    handleNAND.data = in;
-    handleNAND.size = numsectors << 9;
-    sdmmc_send_command(&handleNAND,0x52C19,sector_no);
-    inittarget(&handleSD);
-    return geterror(&handleNAND);
-}
-
 static u32 calcSDSize(u8* csd, int type)
 {
     u32 result = 0;
@@ -335,7 +319,7 @@ static int SD_Init()
 {
     inittarget(&handleSD);
 
-    ioDelay(1u << 19); //Card needs a little bit of time to be detected, it seems
+    ioDelay(1u << 18); //Card needs a little bit of time to be detected, it seems
     
     //If not inserted
     if (!(*((vu16*)0x1000601c) & TMIO_STAT0_SIGSTATE)) return -1;
@@ -395,10 +379,51 @@ static int SD_Init()
     return 0;
 }
 
-int sdmmc_sdcard_init()
+void sdmmc_sdcard_init()
 {
     InitSD();
-    int result = Nand_Init();
-    return result | SD_Init();
+    Nand_Init();
+    SD_Init();
 }
 
+int sdmmc_get_cid(int isNand, uint32_t *info)
+{
+	struct mmcdevice *device;
+	if(isNand)
+		device = &handleNAND;
+	else
+		device = &handleSD;
+	
+	inittarget(device);
+	// use cmd7 to put sd card in standby mode
+	// CMD7
+	{
+		sdmmc_send_command(device,0x10507,0);
+		//if((device->error & 0x4)) return -1;
+	}
+
+	// get sd card info
+	// use cmd10 to read CID
+	{
+		sdmmc_send_command(device,0x1060A,device->initarg << 0x10);
+		//if((device->error & 0x4)) return -2;
+
+		for( int i = 0; i < 4; ++i ) {
+			info[i] = device->ret[i];
+		}
+	}
+
+	// put sd card back to transfer mode
+	// CMD7
+	{
+		sdmmc_send_command(device,0x10507,device->initarg << 0x10);
+		//if((device->error & 0x4)) return -3;
+	}
+
+	if(isNand)
+	{
+		inittarget(&handleSD);
+	}
+	
+	return 0;
+}
