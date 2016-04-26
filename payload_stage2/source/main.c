@@ -1,6 +1,8 @@
 #include "types.h"
 #include "i2c.h"
 #include "screen.h"
+#include "utils.h"
+// #include "font.h"
 #include "fatfs/ff.h"
 
 #define PAYLOAD_ADDRESS 0x23F00000
@@ -30,23 +32,24 @@ void main()
     const char secondPayload[] = "arm9loaderhax.bin";
 
     f_mount(&fs, "0:", 0); //This never fails due to deferred mounting
+    prepareForBoot();
     if(f_open(&payload, firstPayload, FA_READ) == FR_OK)
     {
-        doStuff();
         f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
         ((void (*)())PAYLOAD_ADDRESS)();
     }
     else if(f_open(&payload, secondPayload, FA_READ) == FR_OK)
     {
-        doStuff();
         f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
         ((void (*)())PAYLOAD_ADDRESS)();
     }
-
-    i2cWriteRegister(I2C_DEV_MCU, 0x20, 1);
+    else
+    {
+    	error("Couldn't find the payload.\nMake sure to have arm9loaderhax.bin in the root.");
+    }
 }
 
-void doStuff()
+void prepareForBoot()
 {
 	setFramebuffers();
 	ownArm11();
