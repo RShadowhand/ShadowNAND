@@ -10,7 +10,7 @@ void main()
 
     u32 pressed = HID_PAD;
 
-    if(pressed == SAFE_MODE || pressed == BUTTON_UP) //if home button is pressed
+    if(pressed == BUTTON_DOWN) //if home button is pressed
     {
         //Jump to alternate stage2
         sdmmc_nand_readsectors(0x5A000, 0x64, (u8*)0x08006000);

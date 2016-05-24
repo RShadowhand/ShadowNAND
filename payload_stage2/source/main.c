@@ -28,24 +28,17 @@ void main()
     FIL payload;
     unsigned int br;
 
-    const char firstPayload[] = "bootmgr.bin";
-    const char secondPayload[] = "arm9loaderhax.bin";
-
     f_mount(&fs, "0:", 0); //This never fails due to deferred mounting
-    prepareForBoot();
-    if(f_open(&payload, firstPayload, FA_READ) == FR_OK)
+    if(f_open(&payload, "arm9loaderhax.bin", FA_READ) == FR_OK)
     {
-        f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
-        ((void (*)())PAYLOAD_ADDRESS)();
-    }
-    else if(f_open(&payload, secondPayload, FA_READ) == FR_OK)
-    {
+        prepareForBoot();
         f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
         ((void (*)())PAYLOAD_ADDRESS)();
     }
     else
     {
-    	error("Couldn't find the payload.\nMake sure to have arm9loaderhax.bin in the root.");
+        prepareForBoot();
+        error("Couldn't find the payload.\nMake sure to have arm9loaderhax.bin in the root.");
     }
 }
 
