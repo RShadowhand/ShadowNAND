@@ -1,10 +1,21 @@
 # ShadowNAND
+*CFW in your NAND.*
 
-TODO: fill this
+##How to Install
+* Download **ShadowNAND Installer** from [here](https://github.com/RShadowhand/ShadowNAND_Installer/releases/latest)
+* Download **ShadowNAND** itself from [here](https://github.com/RShadowhand/ShadowNAND/releases/latest)
+* Download other required files from [here](https://mega.co.nz/#!RwUDVL5T!65gKJHAAVFk3R0jCA7zRFC5q5QTsL5CLoRUoqhET-WI)
+* Put ShadowNAND files, other required files, and your `otp.bin` to `SD:\a9lh\`
+* Boot from `arm9loaderhax.bin` or other entry points.
+* Press `SELECT`
+* Done.
+
+##Things to Keep in Mind:
+* It's a glorified A9LH implementation so far.
+* It's great for A9LH Stage2 devs that do not have hardmod:
+ *  Pressing `DPAD_DOWN` on launch boots `safe_mode.bin` instead.
 
 ## Credits
-
-Copyright 2016, Jason Dellaluce
 
 sdmmc.c & sdmmc.h originally written by Normatt
 
