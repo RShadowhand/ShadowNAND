@@ -1,4 +1,0 @@
-%rename link old_link
-
-*link:
-%(old_link) -T ../common/arm11.ld%s

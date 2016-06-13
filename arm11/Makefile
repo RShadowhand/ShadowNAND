@@ -1,57 +1,47 @@
-export PATH	:=	$(DEVKITARM)/bin:$(PATH)
+rwildcard = $(foreach d, $(wildcard $1*), $(filter $(subst *, %, $2), $d) $(call rwildcard, $d/, $2))
 
-CC=arm-none-eabi-gcc
-CP=arm-none-eabi-g++
-OC=arm-none-eabi-objcopy
-LD=arm-none-eabi-ld
-MV=mv -f
-RM=rm -rf
+ifeq ($(strip $(DEVKITARM)),)
+$(error "Please set DEVKITARM in your environment. export DEVKITARM=<path to>devkitARM")
+endif
 
-LIBNAME=arm11
-ELFNAME=$(LIBNAME).elf
-BINNAME=$(LIBNAME).bin
-DATNAME=$(LIBNAME).dat
+include $(DEVKITARM)/3ds_rules
 
-SRC_DIR:=source
-OBJ_DIR:=build
+CC := arm-none-eabi-gcc
+AS := arm-none-eabi-as
+LD := arm-none-eabi-ld
+OC := arm-none-eabi-objcopy
 
-LIBS=
-CFLAGS= -g -Wall -O2 -mword-relocations\
-	-ffast-math -Wno-main -std=c99\
-	-mcpu=mpcore -mlittle-endian $(ARCH)
-LDFLAGS=$(LIBS)
-OCFLAGS=--set-section-flags .bss=alloc,load,contents
+name := $(shell basename $(CURDIR))
 
-OBJS:=$(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(wildcard $(SRC_DIR)/*.c))
-OBJS+=$(patsubst $(SRC_DIR)/%.s, $(OBJ_DIR)/%.o, $(wildcard $(SRC_DIR)/*.s))
-OBJS+=$(patsubst $(SRC_DIR)/%.S, $(OBJ_DIR)/%.o, $(wildcard $(SRC_DIR)/*.S))
+dir_source := source
+dir_build := build
 
-OUT_DIR=build
+ASFLAGS := -mcpu=mpcore -mfloat-abi=hard
+CFLAGS  := -Wall -Wextra -MMD -MP -mthumb -mthumb-interwork $(ASFLAGS) -fno-builtin -std=c11 -Wno-main -O2 -flto -ffast-math
+LDFLAGS := -nostdlib
+
+objects = $(patsubst $(dir_source)/%.s, $(dir_build)/%.o, \
+          $(patsubst $(dir_source)/%.c, $(dir_build)/%.o, \
+          $(call rwildcard, $(dir_source), *.s *.c)))
+
+.PHONY: all
+all: $(name).bin
 
 .PHONY: clean
-
-all: $(LIBNAME).bin
-
-$(LIBNAME).bin: $(OBJS)
-	$(CC) -nostartfiles --specs=../common/$(LIBNAME).specs $(OBJS) $(LDFLAGS) -o $(ELFNAME)
-	$(OC) $(OCFLAGS) -O binary $(ELFNAME) $(BINNAME)
-
-${OBJ_DIR}/%.o: source/%.c | dirs
-	@echo Compiling $<
-	$(CC) -c $(CFLAGS) $< -o $@
-
-${OBJ_DIR}/%.o: source/%.s | dirs
-	@echo Compiling $<
-	$(CC) -c $(CFLAGS) $< -o $@
-
-${OBJ_DIR}/%.o: source/%.S | dirs
-	@echo Compiling $<
-	$(CC) -c $(CFLAGS) $< -o $@
-
-dirs: ${OUT_DIR}
-
-${OUT_DIR}:
-	mkdir -p ${OUT_DIR}
-
 clean:
-	rm -rf *.elf *.bin ${OUT_DIR} ${OBJ_DIR}
+	@rm -rf $(dir_build)
+
+$(name).bin: $(dir_build)/$(name).elf
+	$(OC) -S -O binary $< $@
+
+$(dir_build)/$(name).elf: $(objects)
+	$(LINK.o) -T linker.ld $(OUTPUT_OPTION) $^
+
+$(dir_build)/%.o: $(dir_source)/%.c
+	@mkdir -p "$(@D)"
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+
+$(dir_build)/%.o: $(dir_source)/%.s
+	@mkdir -p "$(@D)"
+	$(COMPILE.s) $(OUTPUT_OPTION) $<
+include $(call rwildcard, $(dir_build), *.d)

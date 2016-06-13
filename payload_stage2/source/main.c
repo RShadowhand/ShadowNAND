@@ -2,15 +2,13 @@
 #include "i2c.h"
 #include "screen.h"
 #include "utils.h"
-// #include "font.h"
 #include "fatfs/ff.h"
+#include "memory.h"
+#include "../build/bundled.h"
 
 #define PAYLOAD_ADDRESS 0x23F00000
 #define A11_PAYLOAD_LOC 0x1FFF4C80 //keep in mind this needs to be changed in the ld script for arm11 too
 #define A11_ENTRY       0x1FFFFFF8
-
-extern u8 arm11_bin[];
-extern u32 arm11_bin_size;
 
 static void ownArm11()
 {
@@ -34,11 +32,12 @@ void main()
         prepareForBoot();
         f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
         ((void (*)())PAYLOAD_ADDRESS)();
+        i2cWriteRegister(I2C_DEV_MCU, 0x20, 1);
     }
     else
     {
         prepareForBoot();
-        error("Couldn't find the payload.\nMake sure to have arm9loaderhax.bin in the root.");
+        error("Couldn't find the payload.\nMake sure to either:\n 1) Have SD card plugged in\n 2) Have arm9loaderhax.bin in the root.");
     }
 }
 

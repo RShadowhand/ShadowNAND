@@ -5,6 +5,8 @@
 #include "sdmmc.h"
 #include "delay.h"
 
+static struct mmcdevice handleNAND;
+
 static inline u16 sdmmc_read16(u16 reg) {
     return *(vu16*)(SDMMC_BASE + reg);
 }
@@ -26,8 +28,6 @@ static inline void setckl(u32 data)
     sdmmc_mask16(REG_SDCLKCTL, 0x2FF, data & 0x2FF);
     sdmmc_mask16(REG_SDCLKCTL, 0x0, 0x100);
 }
-
-static struct mmcdevice handleNAND;
 
 static u32 __attribute__((noinline)) geterror(struct mmcdevice *ctx)
 {
@@ -257,9 +257,8 @@ static int Nand_Init()
     return 0;
 }
 
-int sdmmc_sdcard_init()
+void sdmmc_sdcard_init()
 {
     InitSD();
-    return Nand_Init();
+    Nand_Init();
 }
-

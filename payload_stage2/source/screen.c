@@ -75,13 +75,10 @@ void setFramebuffers()
     *(vu32*)0x23FFFE08 = 0x18346500;
 }
 
-void clearScreens()
+void clearScreens(void)
 {
-    for(u32 i = 0; i < (SCREEN_SIZE); i++)
-    {
-        *((vu32*)0x18300000 + i) = 0;
-        *((vu32*)0x18346500 + i) = 0;
-    }
+    memset32((void *)0x18300000, 0, 0x46500);
+    memset32((void *)0x18346500, 0, 0x38400);
 }
 
 void turnOnBacklight()
