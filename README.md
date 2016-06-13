@@ -5,7 +5,7 @@
 * Download **ShadowNAND Installer** from [here](https://github.com/RShadowhand/ShadowNAND_Installer/releases/latest)
 * Download **ShadowNAND** itself from [here](https://github.com/RShadowhand/ShadowNAND/releases/latest)
 * Download other required files from [here](https://mega.co.nz/#!RwUDVL5T!65gKJHAAVFk3R0jCA7zRFC5q5QTsL5CLoRUoqhET-WI)
-* Put ShadowNAND files, other required files, and your `otp.bin` to `SD:\a9lh\`
+* Put ShadowNAND files, other required files, and your `otp.bin` to `SD:\homebrew\a9lh\`
 * Boot from `arm9loaderhax.bin` or other entry points.
 * Press `SELECT`
 * Done.
