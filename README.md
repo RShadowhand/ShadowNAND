@@ -14,7 +14,8 @@
 * It's a glorified A9LH implementation so far.
 * It's great for A9LH Stage2 devs that do not have hardmod:
  *  Pressing `DPAD_DOWN` on launch boots `safe_mode.bin` instead.
-
+* Has an error screen wherewhich tells you what went wrong instead of just shutting down.
+ * And that makes screeninit mandatory.
 ## Credits
 
 sdmmc.c & sdmmc.h originally written by Normatt
