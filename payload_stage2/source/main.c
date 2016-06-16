@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "fatfs/ff.h"
 #include "memory.h"
+#include "buttons.h"
 #include "../build/bundled.h"
 
 #define PAYLOAD_ADDRESS 0x23F00000
@@ -25,11 +26,16 @@ void main()
     FATFS fs;
     FIL payload;
     unsigned int br;
+    u32 pressed = HID_PAD;
 
     f_mount(&fs, "0:", 0); //This never fails due to deferred mounting
     if(f_open(&payload, "homebrew/boot.bin", FA_READ) == FR_OK)
     {
         prepareForBoot();
+        if (pressed && BUTTON_LEFT)
+        {
+            turnOnBacklight();
+        }
         f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
         ((void (*)())PAYLOAD_ADDRESS)();
         i2cWriteRegister(I2C_DEV_MCU, 0x20, 1);
@@ -47,5 +53,4 @@ void prepareForBoot()
 	setFramebuffers();
 	ownArm11();
 	clearScreens();
-	//turnOnBacklight();
 }
