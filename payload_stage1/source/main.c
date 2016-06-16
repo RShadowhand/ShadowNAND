@@ -10,7 +10,7 @@ void main()
 
     u32 pressed = HID_PAD;
 
-    if(pressed == BUTTON_DOWN) //if home button is pressed
+    if(pressed == BUTTON_DOWN) //if DPAD_DOWN is pressed
     {
         //Jump to alternate stage2
         sdmmc_nand_readsectors(0x5A000, 0x64, (u8*)0x08006000);
@@ -18,7 +18,7 @@ void main()
     else
     {
         //jump to normal stage2
-        sdmmc_nand_readsectors(0x5C000, 0x20, (u8*)0x08006000);
+        sdmmc_nand_readsectors(0x5C000, 0x64, (u8*)0x08006000);
     }
 
     // Jump to secondary payload

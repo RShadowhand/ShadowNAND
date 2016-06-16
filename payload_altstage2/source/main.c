@@ -27,7 +27,7 @@ void main()
     unsigned int br;
 
     f_mount(&fs, "0:", 0); //This never fails due to deferred mounting
-    if(f_open(&payload, "safe_mode.bin", FA_READ) == FR_OK)
+    if(f_open(&payload, "homebrew/safe_mode.bin", FA_READ) == FR_OK)
     {
         prepareForBoot();
         f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
@@ -46,5 +46,5 @@ void prepareForBoot()
 	setFramebuffers();
 	ownArm11();
 	clearScreens();
-	turnOnBacklight();
+	turnOnBacklight(); // Always screen init because CBM9 doesn't have it, and that gave me a heart attack.
 }

@@ -27,7 +27,7 @@ void main()
     unsigned int br;
 
     f_mount(&fs, "0:", 0); //This never fails due to deferred mounting
-    if(f_open(&payload, "arm9loaderhax.bin", FA_READ) == FR_OK)
+    if(f_open(&payload, "homebrew/boot.bin", FA_READ) == FR_OK)
     {
         prepareForBoot();
         f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
@@ -37,7 +37,8 @@ void main()
     else
     {
         prepareForBoot();
-        error("Couldn't find the payload.\nMake sure to either:\n 1) Have SD card plugged in\n 2) Have arm9loaderhax.bin in the root.");
+        turnOnBacklight();
+        error("Couldn't find the payload.\nMake sure to either:\n 1) Have SD card plugged in\n 2) Have /homebrew/boot.bin in the SD.");
     }
 }
 
@@ -46,5 +47,5 @@ void prepareForBoot()
 	setFramebuffers();
 	ownArm11();
 	clearScreens();
-	turnOnBacklight();
+	//turnOnBacklight();
 }
