@@ -1,7 +1,6 @@
 #include "types.h"
 #include "buttons.h"
 #include "sdmmc.h"
-#include "i2c.h"
 
 void main()
 {
