@@ -10,6 +10,12 @@
 * Press `SELECT`
 * Done.
 
+##How to use
+* Install.
+* Download and install [SaltFW v3.0](https://github.com/RShadowhand/SaltFW/tree/v3.0)
+ * SaltFW is the companion CFW for ShadowNAND until ShadowNAND has more features.
+* Done.
+
 ##What can it do:
 * Boot `homebrew/boot.bin`, this can be any payload.
 * Boot `homebrew/boot.bin` with screeninit by pressing `DPAD_LEFT` on launch.
