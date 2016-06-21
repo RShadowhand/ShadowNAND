@@ -12,7 +12,7 @@
 
 ##How to use
 * Install.
-* Download and install [SaltFW v3.0](https://github.com/RShadowhand/SaltFW/tree/v3.0)
+* Download and install [SaltFW v3.0](https://github.com/RShadowhand/SaltFW/tree/v3.0) in ShadowNAND way (boot.bin in /homebrew/)
  * SaltFW is the companion CFW for ShadowNAND until ShadowNAND has more features.
 * Done.
 
