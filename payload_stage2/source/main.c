@@ -36,24 +36,23 @@ void main(void)
 
     u32 payloadFound;
 
-    //No-screeninit payload
+    if(HID_PAD == BUTTON_LEFT){
+        ownArm11(1);
+        clearScreens();
+        i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
+    }
+    else{
+        ownArm11(0);
+    }
+
     if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/boot.bin"))
     {
         payloadFound = 1;
-        if(HID_PAD == BUTTON_LEFT){
-            ownArm11(1);
-            clearScreens();
-            i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
-        }
-        else{
-            ownArm11(0);
-        }
+
     }
     else
     {
-
         payloadFound = 0;
-        ownArm11(0);
     }
 
     //Jump to payload
