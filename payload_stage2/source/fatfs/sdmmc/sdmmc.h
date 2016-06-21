@@ -118,5 +118,11 @@ typedef struct mmcdevice {
     u32 res;
 } mmcdevice;
 
+mmcdevice *getMMCDevice(int drive);
+
 void sdmmc_sdcard_init();
 u32 sdmmc_sdcard_readsectors(u32 sector_no, u32 numsectors, vu8 *out);
+
+u32 sdmmc_nand_readsectors(u32 sector_no, u32 numsectors, vu8 *out);
+
+int sdmmc_get_cid( int isNand, uint32_t *info);

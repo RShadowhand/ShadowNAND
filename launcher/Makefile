@@ -15,40 +15,27 @@ name := $(shell basename $(CURDIR))
 
 dir_source := source
 dir_build := build
-dir_data := data
 
 ASFLAGS := -mcpu=arm946e-s
 CFLAGS  := -Wall -Wextra -MMD -MP -mthumb -mthumb-interwork $(ASFLAGS) -fno-builtin -std=c11 -Wno-main -O2 -flto -ffast-math
-LDFLAGS := -nostartfiles
+LDFLAGS := -nostdlib
 
 objects = $(patsubst $(dir_source)/%.s, $(dir_build)/%.o, \
           $(patsubst $(dir_source)/%.c, $(dir_build)/%.o, \
           $(call rwildcard, $(dir_source), *.s *.c)))
-
-bundledobjects = $(dir_build)/arm11.bin.o $(dir_build)/launcher.bin.o
-
-define bin2o
-	bin2s $< | $(AS) -o $(@)
-	echo "extern const u8" `(echo $(<F) | sed -e 's/^\([0-9]\)/_\1/' | tr . _)`"[];" >> $(dir_build)/bundled.h
-	echo "extern const u32" `(echo $(<F) | sed -e 's/^\([0-9]\)/_\1/' | tr . _)`_size";" >> $(dir_build)/bundled.h
-endef
 
 .PHONY: all
 all: $(name).bin
 
 .PHONY: clean
 clean:
-	@rm -rf $(dir_build) $(dir_data)
+	@rm -rf $(dir_build)
 
 $(name).bin: $(dir_build)/$(name).elf
 	$(OC) -S -O binary $< $@
 
-$(dir_build)/$(name).elf: $(bundledobjects) $(objects)
+$(dir_build)/$(name).elf: $(objects)
 	$(LINK.o) -T linker.ld $(OUTPUT_OPTION) $^
-
-$(dir_build)/%.bin.o: $(dir_data)/%.bin
-	@mkdir -p "$(@D)"
-	@$(bin2o)
 
 $(dir_build)/memory.o: CFLAGS += -O3
 

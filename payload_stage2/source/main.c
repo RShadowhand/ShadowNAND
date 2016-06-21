@@ -1,19 +1,28 @@
-#include "types.h"
-#include "i2c.h"
-#include "screen.h"
-#include "utils.h"
-#include "fatfs/ff.h"
-#include "memory.h"
-#include "buttons.h"
-#include "../build/bundled.h"
+/*
+*   main.c
+*/
 
-#define PAYLOAD_ADDRESS 0x23F00000
-#define A11_PAYLOAD_LOC 0x1FFF4C80 //keep in mind this needs to be changed in the ld script for arm11 too
+#include "types.h"
+#include "buttons.h"
+#include "memory.h"
+#include "i2c.h"
+#include "cache.h"
+#include "fs.h"
+#include "firm.h"
+#include "../build/bundled.h"
+#include "utils.h"
+#include "screen.h"
+
+#define A11_PAYLOAD_LOC 0x1FFF4C80 //Keep in mind this needs to be changed in the ld script for arm11 too
 #define A11_ENTRY       0x1FFFFFF8
 
-static void ownArm11()
+static void ownArm11(u32 screenInit)
 {
-    memcpy((void*)A11_PAYLOAD_LOC, arm11_bin, arm11_bin_size);
+    memcpy((void *)A11_PAYLOAD_LOC, arm11_bin, arm11_bin_size);
+
+    //Let the ARM11 code know if it needs to screen init
+    *(vu32 *)(A11_PAYLOAD_LOC + 8) = screenInit;
+
     *(vu32 *)A11_ENTRY = 1;
     *(vu32 *)0x1FFAED80 = 0xE51FF004;
     *(vu32 *)0x1FFAED84 = A11_PAYLOAD_LOC;
@@ -21,36 +30,47 @@ static void ownArm11()
     while(*(vu32 *)A11_ENTRY);
 }
 
-void main()
+void main(void)
 {
-    FATFS fs;
-    FIL payload;
-    unsigned int br;
-    u32 pressed = HID_PAD;
+    mountSD();
 
-    f_mount(&fs, "0:", 0); //This never fails due to deferred mounting
-    if(f_open(&payload, "homebrew/boot.bin", FA_READ) == FR_OK)
+    u32 payloadFound;
+
+    //No-screeninit payload
+    if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/boot.bin"))
     {
-        prepareForBoot();
-        if (pressed && BUTTON_LEFT)
-        {
-            turnOnBacklight();
+        payloadFound = 1;
+        if(HID_PAD == BUTTON_LEFT){
+            ownArm11(1);
+            clearScreens();
+            i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
         }
-        f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
-        ((void (*)())PAYLOAD_ADDRESS)();
-        i2cWriteRegister(I2C_DEV_MCU, 0x20, 1);
+        else{
+            ownArm11(0);
+        }
     }
     else
     {
-        prepareForBoot();
-        turnOnBacklight();
-        error("Couldn't find the payload.\nMake sure to either:\n 1) Have SD card plugged in\n 2) Have /homebrew/boot.bin in the SD.");
-    }
-}
 
-void prepareForBoot()
-{
-	setFramebuffers();
-	ownArm11();
-	clearScreens();
+        payloadFound = 0;
+        ownArm11(0);
+    }
+
+    //Jump to payload
+    if(payloadFound)
+    {
+        flushCaches();
+
+        ((void (*)())PAYLOAD_ADDRESS)();
+    }
+
+    unmountSD();
+
+    //If the SAFE_MODE combo is not pressed, try to patch and boot the CTRNAND FIRM
+    // if(HID_PAD == SAFE_MODE) loadFirm(); DO NOT ENABLE OR YOU WILL BRICK
+    if(HID_PAD != SAFE_MODE) loadFirm();
+
+    flushCaches();
+    i2cWriteRegister(I2C_DEV_MCU, 0x20, 1);
+    while(1);
 }

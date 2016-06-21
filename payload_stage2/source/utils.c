@@ -50,9 +50,9 @@ void error(const char *message)
 {
     drawString("An error has occurred:", 10, 10, COLOR_RED);
     int posY = drawString(message, 10, 30, COLOR_WHITE);
-    drawString("Press any button to shutdown", 10, posY + 2 * SPACING_Y, COLOR_WHITE);
+    drawString("Press any button to continue booting from NAND", 10, posY + 2 * SPACING_Y, COLOR_WHITE);
 
     waitInput();
 
-    mcuShutDown();
+    // mcuShutDown();
 }

@@ -5,11 +5,11 @@
 */
 
 #include "crypto.h"
-// #include "memory.h"
+#include "memory.h"
 #include "fatfs/sdmmc/sdmmc.h"
 
 /****************************************************************
-*                   Crypto Libs
+*                   Crypto libs
 ****************************************************************/
 
 /* original version by megazig */
@@ -271,7 +271,7 @@ static void sha(void *res, const void *src, u32 size, u32 mode)
 }
 
 /****************************************************************
-*                   Nand/FIRM Crypto stuff
+*                   NAND/FIRM crypto
 ****************************************************************/
 
 static u8 nandCTR[0x10],
@@ -303,7 +303,7 @@ void ctrNandInit(void)
     }
 }
 
-//Read and decrypt from the selected CTRNAND
+//Read and decrypt from CTRNAND
 u32 ctrNandRead(u32 sector, u32 sectorCount, u8 *outbuf)
 {
     u8 tmpCTR[0x10];
@@ -311,14 +311,7 @@ u32 ctrNandRead(u32 sector, u32 sectorCount, u8 *outbuf)
     aes_advctr(tmpCTR, ((sector + fatStart) * 0x200) / AES_BLOCK_SIZE, AES_INPUT_BE | AES_INPUT_NORMAL);
 
     //Read
-    u32 result;
-    if(!firmSource)
-        result = sdmmc_nand_readsectors(sector + fatStart, sectorCount, outbuf);
-    else
-    {
-        sector += emuOffset;
-        result = sdmmc_sdcard_readsectors(sector + fatStart, sectorCount, outbuf);
-    }
+    u32 result = sdmmc_nand_readsectors(sector + fatStart, sectorCount, outbuf);
 
     //Decrypt
     aes_use_keyslot(nandSlot);
@@ -345,12 +338,28 @@ void decryptExeFs(u8 *inbuf)
 }
 
 //ARM9Loader replacement
-void arm9Loader(u8 *arm9Section, u32 mode)
+void arm9Loader(u8 *arm9Section)
 {
+    u32 a9lVersion;
+
+    //Determine the ARM9Loader version
+    switch(arm9Section[0x53])
+    {
+        case 0xFF:
+            a9lVersion = 0;
+            break;
+        case '1':
+            a9lVersion = 1;
+            break;
+        default:
+            a9lVersion = 2;
+            break;
+    }
+
     //Firm keys
-    u8 keyY[0x10];
-    u8 arm9BinCTR[0x10];
-    u8 arm9BinSlot = mode ? 0x16 : 0x15;
+    u8 keyY[0x10],
+       arm9BinCTR[0x10],
+       arm9BinSlot = a9lVersion ? 0x16 : 0x15;
 
     //Setup keys needed for arm9bin decryption
     memcpy(keyY, arm9Section + 0x10, 0x10);
@@ -362,13 +371,13 @@ void arm9Loader(u8 *arm9Section, u32 mode)
     for(u8 *tmp = arm9Section + 0x30; *tmp; tmp++)
         arm9BinSize = (arm9BinSize << 3) + (arm9BinSize << 1) + *tmp - '0';
 
-    if(mode)
+    if(a9lVersion)
     {
-        const u8 key2[0x10] = {0x42, 0x3F, 0x81, 0x7A, 0x23, 0x52, 0x58, 0x31, 0x6E, 0x75, 0x8E, 0x3A, 0x39, 0x43, 0x2E, 0xD0};
+        const u8 key1[0x10] = {0x07, 0x29, 0x44, 0x38, 0xF8, 0xC9, 0x75, 0x93, 0xAA, 0x0E, 0x4A, 0xB4, 0xAE, 0x84, 0xC1, 0xD8},
+                 key2[0x10] = {0x42, 0x3F, 0x81, 0x7A, 0x23, 0x52, 0x58, 0x31, 0x6E, 0x75, 0x8E, 0x3A, 0x39, 0x43, 0x2E, 0xD0};
         u8 keyX[0x10];
 
-        //Set 0x11 to key2 for the arm9bin and misc keys
-        aes_setkey(0x11, key2, AES_KEYNORMAL, AES_INPUT_BE | AES_INPUT_NORMAL);
+        aes_setkey(0x11, a9lVersion == 2 ? key2 : key1, AES_KEYNORMAL, AES_INPUT_BE | AES_INPUT_NORMAL);
         aes_use_keyslot(0x11);
         aes(keyX, arm9Section + 0x60, 1, NULL, AES_ECB_DECRYPT_MODE, 0);
         aes_setkey(arm9BinSlot, keyX, AES_KEYX, AES_INPUT_BE | AES_INPUT_NORMAL);
@@ -382,10 +391,10 @@ void arm9Loader(u8 *arm9Section, u32 mode)
     aes(arm9Section + 0x800, arm9Section + 0x800, arm9BinSize / AES_BLOCK_SIZE, arm9BinCTR, AES_CTR_MODE, AES_INPUT_BE | AES_INPUT_NORMAL);
 
     //Set >=9.6 KeyXs
-    if(mode)
+    if(a9lVersion == 2)
     {
-        u8 keyData[0x10] = {0xDD, 0xDA, 0xA4, 0xC6, 0x2C, 0xC4, 0x50, 0xE9, 0xDA, 0xB6, 0x9B, 0x0D, 0x9D, 0x2A, 0x21, 0x98};
-        u8 decKey[0x10];
+        u8 keyData[0x10] = {0xDD, 0xDA, 0xA4, 0xC6, 0x2C, 0xC4, 0x50, 0xE9, 0xDA, 0xB6, 0x9B, 0x0D, 0x9D, 0x2A, 0x21, 0x98},
+           decKey[0x10];
 
         //Set keys 0x19..0x1F keyXs
         aes_use_keyslot(0x11);
