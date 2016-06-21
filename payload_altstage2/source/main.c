@@ -20,6 +20,14 @@ static void ownArm11()
     while(*(vu32 *)A11_ENTRY);
 }
 
+static inline void prepareForBoot()
+{
+	setFramebuffers();
+	ownArm11();
+	clearScreens();
+	turnOnBacklight(); // Always screen init because CBM9 doesn't have it, and that gave me a heart attack.
+}
+
 void main()
 {
     FATFS fs;
@@ -39,12 +47,4 @@ void main()
         prepareForBoot();
         error("Couldn't find the payload.\nMake sure to either:\n 1) Have SD card plugged in\n 2) Have safe_mode.bin in the root.");
     }
-}
-
-void prepareForBoot()
-{
-	setFramebuffers();
-	ownArm11();
-	clearScreens();
-	turnOnBacklight(); // Always screen init because CBM9 doesn't have it, and that gave me a heart attack.
 }
