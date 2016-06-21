@@ -12,6 +12,7 @@
 #include "../build/bundled.h"
 #include "utils.h"
 #include "screen.h"
+#include "stdio.h"
 
 #define A11_PAYLOAD_LOC 0x1FFF4C80 //Keep in mind this needs to be changed in the ld script for arm11 too
 #define A11_ENTRY       0x1FFFFFF8
@@ -45,10 +46,37 @@ void main(void)
         ownArm11(0);
     }
 
-    if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/boot.bin"))
+    char stuff[20][22] = {
+    	"FR_OK",
+		"FR_DISK_ERR",
+		"FR_INT_ERR",
+		"FR_NOT_READY",
+		"FR_NO_FILE",
+		"FR_NO_PATH",
+		"FR_INVALID_NAME",
+		"FR_DENIED",
+		"FR_EXIST",
+		"FR_INVALID_OBJECT",
+		"FR_WRITE_PROTECTED",
+		"FR_INVALID_DRIVE",
+		"FR_NOT_ENABLED",
+		"FR_NO_FILESYSTEM",
+		"FR_MKFS_ABORTED",
+		"FR_TIMEOUT",
+		"FR_LOCKED",
+		"FR_NOT_ENOUGH_CORE",
+		"FR_TOO_MANY_OPEN_FILES",
+		"FR_INVALID_PARAMETER"
+    };
+
+    if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/a9nc.bin"))
     {
         payloadFound = 1;
-
+        f_unlink("homebrew/a9nc.bin");
+    }
+    else if (fileRead((void *)PAYLOAD_ADDRESS, "homebrew/boot.bin"))
+    {
+    	payloadFound = 1;
     }
     else
     {
