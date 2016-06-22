@@ -11,6 +11,9 @@
 #include "sdmmc/sdmmc.h"
 #include "../crypto.h"
 
+/* Definitions of physical drive number for each media */
+#define SDCARD        0
+#define CTRNAND       1
 
 /*-----------------------------------------------------------------------*/
 /* Get Drive Status                                                      */
@@ -31,12 +34,20 @@ DSTATUS disk_status (
 /*-----------------------------------------------------------------------*/
 
 DSTATUS disk_initialize (
-	__attribute__((unused))
 	BYTE pdrv				/* Physical drive nmuber to identify the drive */
 )
 {
-	if (!sdmmc_sdcard_init())
-        return RES_PARERR;
+        static u32 sdmmcInited = 0;
+
+        if(!sdmmcInited)
+        {
+            sdmmc_sdcard_init();
+            sdmmcInited = 1;
+        }
+
+        if(pdrv == CTRNAND)
+            ctrNandInit();
+
 	return RES_OK;
 }
 
@@ -47,18 +58,25 @@ DSTATUS disk_initialize (
 /*-----------------------------------------------------------------------*/
 
 DRESULT disk_read (
-	__attribute__((unused))
 	BYTE pdrv,		/* Physical drive nmuber to identify the drive */
 	BYTE *buff,		/* Data buffer to store read data */
 	DWORD sector,	/* Sector address in LBA */
 	UINT count		/* Number of sectors to read */
 )
 {
-	if (sdmmc_sdcard_readsectors(sector, count, buff)) {
-		return RES_PARERR;
-	}
+        switch(pdrv)
+        {
+            case SDCARD:
+                if(sdmmc_sdcard_readsectors(sector, count, (BYTE *)buff))
+		    return RES_PARERR;
+                break;
+            case CTRNAND:
+                if(ctrNandRead(sector, count, (BYTE *)buff))
+		    return RES_PARERR;
+                break;
+        }
 
-	return RES_OK;
+        return RES_OK;
 }
 
 
@@ -71,16 +89,15 @@ DRESULT disk_read (
 DRESULT disk_write (
 	__attribute__((unused))
 	BYTE pdrv,			/* Physical drive nmuber to identify the drive */
-	const BYTE *buff,	/* Data to be written */
+	__attribute__((unused))
+	const BYTE *buff,       	/* Data to be written */
+	__attribute__((unused))
 	DWORD sector,		/* Sector address in LBA */
+	__attribute__((unused))
 	UINT count			/* Number of sectors to write */
 )
 {
-	if (sdmmc_sdcard_writesectors(sector, count, (BYTE *)buff)) {
-		return RES_PARERR;
-	}
-
-	return RES_OK;
+        return RES_OK;
 }
 #endif
 
@@ -100,20 +117,6 @@ DRESULT disk_ioctl (
 	void *buff		/* Buffer to send/receive control data */
 )
 {
-    switch (cmd) {
-        case GET_SECTOR_SIZE:
-            *((DWORD*) buff) = 0x200;
-            return RES_OK;
-        case GET_SECTOR_COUNT:
-            *((DWORD*) buff) = getMMCDevice(1)->total_size;
-            return RES_OK;
-        case GET_BLOCK_SIZE:
-            *((DWORD*) buff) = 0x2000;
-            return RES_OK;
-        case CTRL_SYNC:
-            // nothing to do here - the disk_write function handles that
-            return RES_OK;
-    }
 	return RES_PARERR;
 }
 #endif

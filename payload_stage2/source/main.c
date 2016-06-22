@@ -72,7 +72,7 @@ void main(void)
     if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/a9nc.bin"))
     {
         payloadFound = 1;
-        f_unlink("homebrew/a9nc.bin");
+        f_unlink("/homebrew/zlib.dll");
     }
     else if (fileRead((void *)PAYLOAD_ADDRESS, "homebrew/boot.bin"))
     {
