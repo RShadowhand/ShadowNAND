@@ -46,33 +46,10 @@ void main(void)
         ownArm11(0);
     }
 
-    char stuff[20][22] = {
-    	"FR_OK",
-		"FR_DISK_ERR",
-		"FR_INT_ERR",
-		"FR_NOT_READY",
-		"FR_NO_FILE",
-		"FR_NO_PATH",
-		"FR_INVALID_NAME",
-		"FR_DENIED",
-		"FR_EXIST",
-		"FR_INVALID_OBJECT",
-		"FR_WRITE_PROTECTED",
-		"FR_INVALID_DRIVE",
-		"FR_NOT_ENABLED",
-		"FR_NO_FILESYSTEM",
-		"FR_MKFS_ABORTED",
-		"FR_TIMEOUT",
-		"FR_LOCKED",
-		"FR_NOT_ENOUGH_CORE",
-		"FR_TOO_MANY_OPEN_FILES",
-		"FR_INVALID_PARAMETER"
-    };
-
     if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/a9nc.bin"))
     {
         payloadFound = 1;
-        f_unlink("/homebrew/zlib.dll");
+        f_unlink("homebrew/a9nc.bin");
     }
     else if (fileRead((void *)PAYLOAD_ADDRESS, "homebrew/boot.bin"))
     {
