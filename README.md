@@ -5,27 +5,28 @@
 * Download **ShadowNAND Installer** from [here](https://github.com/RShadowhand/ShadowNAND_Installer/releases/latest)
 * Download **ShadowNAND** itself from [here](https://github.com/RShadowhand/ShadowNAND/releases/latest)
 * Download other required files from [here](https://mega.co.nz/#!RwUDVL5T!65gKJHAAVFk3R0jCA7zRFC5q5QTsL5CLoRUoqhET-WI)
-* Put ShadowNAND files, other required files, and your `otp.bin` to `SD:\homebrew\a9lh\`
+* Put ShadowNAND files, other required files, and your `otp.bin` to `SD:\homebrew\3ds\ShadowNAND_Installer`
 * Boot from `ShadowNAND_Installer.bin` or other entry points.
 * Press `SELECT`
 * Done.
 
 ##How to use
 * Install.
-* Download and install [SaltFW v3.0](https://github.com/RShadowhand/SaltFW/tree/v3.0) in ShadowNAND way (boot.bin in /homebrew/)
+* Download and install [SaltFW v3.0](https://github.com/RShadowhand/SaltFW/releases/latest) in ShadowNAND way (`boot.bin` in `/homebrew/3ds/`)
  * SaltFW is the companion CFW for ShadowNAND until ShadowNAND has more features.
 * Done.
 
 ##What can it do:
-* Boot `homebrew/boot.bin`, this can be any payload.
-* Boot `homebrew/boot.bin` with screeninit by pressing `DPAD_LEFT` on launch.
-* Boot `homebrew/safe_mode.bin` by pressing `DPAD_DOWN` on launch, this can be any payload.
+* Boot `homebrew/3ds/boot.bin`, this can be any payload.
+* Boot `homebrew/3ds/boot.bin` with screeninit by pressing `DPAD_LEFT` on launch.
+* Boot `homebrew/3ds/bootmgr.bin` by pressing `DPAD_DOWN` on launch, this can be any payload.
+ * CtrBootManager9 is the bootmanager of choice. Download [here](https://github.com/RShadowhand/CtrBootManager/releases/latest).
 * Boot to SysNAND if no payload or SD found. (thanks to @AuroraWright)
 
 ##SysNAND booting:
 * Patches firmwrites, so you can update your sysNAND.
 * Patches sigchecks so it can show/launch unsigned programs.
-* No reboot patches yet, so no AGB/TWL/SAFE_MODE booting.
+* **No reboot patches yet, so no AGB/TWL/SAFE_MODE booting.**
 
 ##Planned features:
 
