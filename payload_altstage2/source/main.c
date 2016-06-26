@@ -49,6 +49,6 @@ void main()
     else
     {
         prepareForBoot();
-        error("Couldn't find the payload.\nMake sure to either:\n 1) Have SD card plugged in\n 2) Have safe_mode.bin in the root.");
+        error("Couldn't find the payload.\nMake sure to either:\n 1) Have SD card plugged in\n 2) Have homebrew/3ds/bootmgr.bin.");
     }
 }
