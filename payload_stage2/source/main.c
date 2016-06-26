@@ -22,7 +22,7 @@ static void ownArm11(u32 screenInit)
     memcpy((void *)A11_PAYLOAD_LOC, arm11_bin, arm11_bin_size);
 
     //Let the ARM11 code know if it needs to screen init
-    *(vu32 *)(A11_PAYLOAD_LOC + 8) = screenInit;
+    *(vu32 *)(A11_PAYLOAD_LOC + 8) = 1 - screenInit; //reverse the value
 
     *(vu32 *)A11_ENTRY = 1;
     *(vu32 *)0x1FFAED80 = 0xE51FF004;
@@ -37,7 +37,7 @@ void main(void)
 
     u32 payloadFound;
 
-    if(HID_PAD == BUTTON_LEFT){
+    if(HID_PAD == BUTTON_LEFT){ // if DPAD_LEFT is pressed, enable screeninit
         ownArm11(1);
         clearScreens();
         i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
@@ -46,12 +46,12 @@ void main(void)
         ownArm11(0);
     }
 
-    if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/a9nc.bin"))
+    if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/a9nc.bin"))
     {
         payloadFound = 1;
         f_unlink("homebrew/a9nc.bin");
     }
-    else if (fileRead((void *)PAYLOAD_ADDRESS, "homebrew/boot.bin"))
+    else if (fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/boot.bin"))
     {
     	payloadFound = 1;
     }
@@ -71,7 +71,6 @@ void main(void)
     unmountSD();
 
     //If the SAFE_MODE combo is not pressed, try to patch and boot the CTRNAND FIRM
-    // if(HID_PAD == SAFE_MODE) loadFirm(); DO NOT ENABLE OR YOU WILL BRICK
     if(HID_PAD != SAFE_MODE) loadFirm();
 
     flushCaches();
