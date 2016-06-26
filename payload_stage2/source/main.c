@@ -22,7 +22,7 @@ static void ownArm11(u32 screenInit)
     memcpy((void *)A11_PAYLOAD_LOC, arm11_bin, arm11_bin_size);
 
     //Let the ARM11 code know if it needs to screen init
-    *(vu32 *)(A11_PAYLOAD_LOC + 8) = 1 - screenInit; //reverse the value
+    *(vu32 *)(A11_PAYLOAD_LOC + 8) = screenInit;
 
     *(vu32 *)A11_ENTRY = 1;
     *(vu32 *)0x1FFAED80 = 0xE51FF004;
@@ -49,7 +49,7 @@ void main(void)
     if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/a9nc.bin"))
     {
         payloadFound = 1;
-        f_unlink("homebrew/a9nc.bin");
+        f_unlink("homebrew/3ds/a9nc.bin");
     }
     else if (fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/boot.bin"))
     {
