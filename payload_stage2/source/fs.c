@@ -40,11 +40,6 @@ u32 fileRead(void *dest, const char *path)
     return size;
 }
 
-u32 fileUnlink(const char *path)
-{
-    return (f_unlink(path) == FR_OK);
-}
-
 void firmRead(void *dest)
 {
     const char *firmFolders[] = { "00000002", "20000002" };
