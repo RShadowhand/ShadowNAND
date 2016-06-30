@@ -10,6 +10,16 @@
 #define A11_PAYLOAD_LOC 0x1FFF4C80 //keep in mind this needs to be changed in the ld script for arm11 too
 #define A11_ENTRY       0x1FFFFFF8
 
+// static void ownArm11()
+// {
+//     memcpy((void*)A11_PAYLOAD_LOC, arm11_bin, arm11_bin_size);
+//     *(vu32 *)A11_ENTRY = 1;
+//     *(vu32 *)0x1FFAED80 = 0xE51FF004;
+//     *(vu32 *)0x1FFAED84 = A11_PAYLOAD_LOC;
+//     *(vu8 *)0x1FFFFFF0 = 2;
+//     while(*(vu32 *)A11_ENTRY);
+// }
+
 static void ownArm11(u32 screenInit)
 {
     memcpy((void *)A11_PAYLOAD_LOC, arm11_bin, arm11_bin_size);
@@ -29,7 +39,7 @@ static inline void prepareForBoot()
 	setFramebuffers();
 	ownArm11(1);
 	clearScreens();
-	turnOnBacklight(); // Always do this because CBM9 doesn't, and that gave me a heart attack.
+	turnOnBacklight(); // Always screen init because CBM9 doesn't have it, and that gave me a heart attack.
 }
 
 void main()
@@ -39,7 +49,7 @@ void main()
     unsigned int br;
 
     f_mount(&fs, "0:", 0); //This never fails due to deferred mounting
-    if(f_open(&payload, "homebrew/3ds/bootmgr.bin", FA_READ) == FR_OK)
+    if(f_open(&payload, "homebrew/safe_mode.bin", FA_READ) == FR_OK)
     {
         prepareForBoot();
         f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
