@@ -48,8 +48,9 @@ void main(void)
         i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
         f_unlink("homebrew/3ds/a9nc.bin");
     }
-    else if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/boot_si.bin"))
+    else if(fileRead("homebrew/3ds/screeninit.txt"))
     {
+        fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/boot.bin")
         payloadFound = 1;
         ownArm11(1); // Init the screen
         clearScreens();
