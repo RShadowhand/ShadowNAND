@@ -48,25 +48,17 @@ void main(void)
         i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
         f_unlink("homebrew/3ds/a9nc.bin");
     }
-    else if(fileRead("homebrew/3ds/screeninit.txt"))
-    {
-        fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/boot.bin")
-        payloadFound = 1;
-        ownArm11(1); // Init the screen
-        clearScreens();
-        i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
-    }
     else if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/boot.bin"))
     {
         if(fileRead("homebrew/3ds/screeninit.txt"))
         {
-             payloadFound = 1;
+            payloadFound = 1;
             ownArm11(1); // Init the screen
             clearScreens();
             i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
         } else {
-        payloadFound = 1;
-        ownArm11(0); // Don't init the screen
+            payloadFound = 1;
+            ownArm11(0); // Don't init the screen
         }
     }
     else //No payload found/no SD inserted
