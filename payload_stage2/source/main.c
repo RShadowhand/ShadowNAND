@@ -56,7 +56,15 @@ void main(void)
             ownArm11(1); // Init the screen
             clearScreens();
             i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
-        } else {
+        } 
+        else if (HID_PAD = BUTTON_LEFT) 
+        {
+            payloadFound = 1;
+            ownArm11(1); // Init the screen
+            clearScreens();
+            i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
+        } 
+        else {
             payloadFound = 1;
             ownArm11(0); // Don't init the screen
         }
