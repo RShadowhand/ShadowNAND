@@ -16,13 +16,12 @@ It has screeninit on by default (this can be disabled by pressing a key on boot 
 
 ##How to use
 * Install.
-* Download and install [SaltFW v3.0](https://github.com/RShadowhand/SaltFW/releases/latest) in ShadowNAND way (`boot.bin` in `/homebrew/3ds/`)
- * SaltFW is the companion CFW for ShadowNAND until ShadowNAND has more features.
+* Download and install a CFW of your choice (like SaltFW or Corbenik).
 * Done.
 
 ##What can it do:
-* Boot `homebrew/3ds/boot.bin`, this can be any payload.
-* Boot `homebrew/3ds/boot.bin` with screeninit by pressing `DPAD_LEFT` on launch.
+* Boot "/arm9loaderhax.bin" or "/homebrew/boot.bin" without screeninit (can be changed by pressing DPAD_LEFT on boot)
+* Boot "/arm9loaderhax_si.bin" or "/homebrew/boot_si.bin" with screeninit (can be changed by pressing DPAD_LEFT on boot)
 * Boot `homebrew/3ds/bootmgr.bin` by pressing `DPAD_DOWN` on launch, this can be any payload.
  * CtrBootManager9 is the bootmanager of choice. Download [here](https://github.com/RShadowhand/CtrBootManager/releases/latest).
 * Boot to SysNAND if no payload or SD found. (thanks to @AuroraWright)
@@ -50,9 +49,6 @@ sdmmc.c & sdmmc.h originally written by Normatt
 
 Licensed under GPLv2 or any later version, refer to the license.txt file included.
 
-
-
-Credits:
 
 * Shadowhand for ShadowNAND
 * Smealum and contributors for libctru
