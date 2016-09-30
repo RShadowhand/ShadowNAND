@@ -53,13 +53,13 @@ void main(void)
         payloadFound = 1;
         if (HID_PAD != BUTTON_LEFT) // If DPAD_LEFT is not held
         {
-            ownArm11(0); // Don't init the screen
+            ownArm11(1); // Init the screen
+            clearScreens();
+            i2cWriteRegister(3, 0x22, 0x2A);
         }
         else // If DPAD_LEFT is held
         {
-            ownArm11(1); // Init the screen
-            clearScreens();
-            i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
+            ownArm11(0); // Do not init the screen
         }
     }
     else //No payload found/no SD inserted
