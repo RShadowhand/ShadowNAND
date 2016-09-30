@@ -95,13 +95,13 @@ void main(void)
     }
 
     //Jump to payload
-    if(payloadFound)
+    if(payloadFound) //If payload is found
     {
-		if(!skipInit)
+		if(!skipInit) //If not skipped (this is only set if the a9nc.bin is available
 		{
-			if(defaultInit)
+			if(defaultInit) // If the payload boots with screeninit by default
 			{
-				if (HID_PAD != BUTTON_LEFT)
+				if (HID_PAD != BUTTON_LEFT) 
 				{
 					ownArm11(1);
 					clearScreens();
@@ -112,7 +112,7 @@ void main(void)
 					ownArm11(0);
 				}
 			}
-			else
+			else //if the payload boots without screeninit by default
 			{
 				if (HID_PAD == BUTTON_LEFT)
 				{
