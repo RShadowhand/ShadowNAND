@@ -77,6 +77,16 @@ void main(void)
     {
         payloadFound = 1;
         defaultInit = 1;
+    }
+    else if(fileRead((void *)PAYLOAD_ADDRESS, "a9lh.bin")) // Boots from /a9lh.bin, by default screeninit is off, can be turned on with a keypress at boot
+    {
+        payloadFound = 1;
+        defaultInit = 0;
+    }
+    else if(fileRead((void *)PAYLOAD_ADDRESS, "a9lh_si.bin")) // Boots from /a9lh_si.bin, by default screeninit is on, can be turned off with a keypress at boot
+    {
+        payloadFound = 1;
+        defaultInit = 1;
     }    
     else if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/boot.bin")) // Boots from ShadowNAND's standard boot.bin, screeninit is off by default.
     {
