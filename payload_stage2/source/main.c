@@ -56,10 +56,13 @@ void main(void)
     mountSD();
 
     u32 payloadFound;
+    u32 defaultInit;
+    u32 skipInit = 0;
 
     if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/a9nc.bin")) // Full A9NC support
     {
         payloadFound = 1;
+        skipInit = 1;
         ownArm11(1);
         clearScreens();
         i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
@@ -68,59 +71,22 @@ void main(void)
     else if(fileRead((void *)PAYLOAD_ADDRESS, "arm9loaderhax.bin")) // Boots from /arm9loaderhax.bin, by default screeninit is off, can be turned on with a keypress at boot
     {
         payloadFound = 1;
-        if (HID_PAD != BUTTON_LEFT) // If DPAD_LEFT is not held
-        {
-            ownArm11(0); // Do not init the screen
-        }
-        else // If DPAD_LEFT is held
-        {
-
-            ownArm11(1); // Init the screen
-            clearScreens();
-            i2cWriteRegister(3, 0x22, 0x2A);            
-        }
+        defaultInit = 0;
     }
     else if(fileRead((void *)PAYLOAD_ADDRESS, "arm9loaderhax_si.bin")) // Boots from /arm9loaderhax_si.bi, screeninit is on by default.
     {
         payloadFound = 1;
-        if (HID_PAD != BUTTON_LEFT) // If DPAD_LEFT is not held
-        {
-            ownArm11(1); // Init the screen
-            clearScreens();
-            i2cWriteRegister(3, 0x22, 0x2A);
-        }
-        else // If DPAD_LEFT is held
-        {
-            ownArm11(0); // Do not init the screen
-        }
+        defaultInit = 1;
     }    
     else if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/boot.bin")) // Boots from ShadowNAND's standard boot.bin, screeninit is off by default.
     {
 		payloadFound = 1;
-		if (HID_PAD != BUTTON_LEFT)
-		{
-			ownArm11(0);
-		}
-		else
-		{
-			ownArm11(1);
-			clearScreens();
-			i2cWriteRegister(3, 0x22, 0x2A);			
-		}
+		defaultInit = 0;
 	}    
     else if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/boot_si.bin"))// Boots from /homebrew/3ds/boot_si.bin, screeninit is on by default. 
     {
 		payloadFound = 1;
-		if (HID_PAD != BUTTON_LEFT)
-		{
-			ownArm11(1);
-			clearScreens();
-			i2cWriteRegister(3, 0x22, 0x2A);
-		}
-		else
-		{
-			ownArm11(0);
-		}
+		defaultInit = 1;
 	}
     else //No payload found/no SD inserted
     {
@@ -131,6 +97,35 @@ void main(void)
     //Jump to payload
     if(payloadFound)
     {
+		if(!skipInit)
+		{
+			if(defaultInit)
+			{
+				if (HID_PAD != BUTTON_LEFT)
+				{
+					ownArm11(1);
+					clearScreens();
+					i2cWriteRegister(3, 0x22, 0x2A);
+				}
+				else
+				{
+					ownArm11(0);
+				}
+			}
+			else
+			{
+				if (HID_PAD == BUTTON_LEFT)
+				{
+					ownArm11(1);
+					clearScreens();
+					i2cWriteRegister(3, 0x22, 0x2A);
+				}
+				else
+				{
+					ownArm11(0);
+				}				
+			}		
+		}
         flushCaches();
 
         ((void (*)())PAYLOAD_ADDRESS)();
