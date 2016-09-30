@@ -1,11 +1,15 @@
-# ShadowNAND
+# SDNANwodahS
 *CFW in your NAND.*
+
+This is a fork of ShadowNAND. 
+
+It has screeninit on by default (this can be disabled by pressing a key on boot up).
 
 ##How to Install
 * Download **ShadowNAND Installer** from [here](https://github.com/RShadowhand/ShadowNAND_Installer/releases/latest)
-* Download **ShadowNAND** itself from [here](https://github.com/RShadowhand/ShadowNAND/releases/latest)
+* Download **DNANwodahS** itself from [here](https://github.com/gnmmarechal/DNANwodahS/releases/latest)
 * Download other required files from [here](https://mega.co.nz/#!RwUDVL5T!65gKJHAAVFk3R0jCA7zRFC5q5QTsL5CLoRUoqhET-WI)
-* Put ShadowNAND files, other required files, and your `otp.bin` to `SD:\homebrew\3ds\ShadowNAND_Installer`
+* Put DNANwodahS files, other required files, and your `otp.bin` to `SD:\homebrew\3ds\ShadowNAND_Installer`
 * Boot from `ShadowNAND_Installer.bin` or other entry points.
 * Press `SELECT`
 * Done.
@@ -46,6 +50,11 @@ sdmmc.c & sdmmc.h originally written by Normatt
 
 Licensed under GPLv2 or any later version, refer to the license.txt file included.
 
+
+
+Credits:
+
+* Shadowhand for ShadowNAND
 * Smealum and contributors for libctru
 * Normatt for sdmmc.c and .h, and also for .ld files and the log from 3dmoo9 that provided us with some of the information needed to get screen init
 * Christophe Devine for the SHA codes
