@@ -1,23 +1,6 @@
 /*
 *   main.c
-*/
-
-
-/*
- * DNANwodahS by gnmmarechal
- * 
- * Fork of ShadowNAND
- * 
- * Licensed under the GPLv2
- * 
- * You can use ShadowNAND Installer to install DNANwodahS
- * 
- * Base ShadowNAND Version: v0.85
- * 
- * DNANwodahS Version: v0.2
- * 
- */
- 
+*/ 
  
 #include "types.h"
 #include "buttons.h"
@@ -124,18 +107,19 @@ void main(void)
 			}
 			else //if the payload boots without screeninit by default
 			{
-				if (HID_PAD == BUTTON_LEFT)
+				if (HID_PAD != BUTTON_LEFT)
 				{
-					ownArm11(1);
-					clearScreens();
-					i2cWriteRegister(3, 0x22, 0x2A);
+					ownArm11(0);
 				}
 				else
 				{
-					ownArm11(0);
+					ownArm11(1);
+					clearScreens();
+					i2cWriteRegister(3, 0x22, 0x2A);					
 				}				
 			}		
 		}
+		
         flushCaches();
 
         ((void (*)())PAYLOAD_ADDRESS)();
