@@ -4,7 +4,7 @@
 ##How to Install
 * Download **ShadowNAND Installer** from [here](https://github.com/RShadowhand/ShadowNAND_Installer/releases/latest)
 * Download **ShadowNAND** itself from [here](https://github.com/RShadowhand/ShadowNAND/releases/latest)
-* Download other required files from [here](https://mega.co.nz/#!RwUDVL5T!65gKJHAAVFk3R0jCA7zRFC5q5QTsL5CLoRUoqhET-WI)
+* Download other required files from [here](https://3ds.secretalgorithm.com/Required_Files.zip)
 * Put ShadowNAND files, other required files, and your `otp.bin` to `SD:\homebrew\3ds\ShadowNAND_Installer`
 * Boot from `ShadowNAND_Installer.bin` or other entry points.
 * Press `SELECT`
