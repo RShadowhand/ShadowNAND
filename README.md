@@ -57,4 +57,4 @@ Licensed under GPLv2 or any later version, refer to the license.txt file include
 * [3dbrew community](http://3dbrew.org/)
 * bilis/b1l1s for his screen init code, and work on inegrating it into stage 2
 * dark_samus for work on integrating screen init into stage 2
-* AuroraWright for the main features.
+* **AuroraWright for the main features.**
