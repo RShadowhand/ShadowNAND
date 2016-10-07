@@ -50,16 +50,23 @@ void main(void)
     }
     else if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/boot.bin"))
     {
-        payloadFound = 1;
-        if (HID_PAD != BUTTON_LEFT) // If DPAD_LEFT is not held
+        if(fileRead("homebrew/3ds/screeninit.txt"))
         {
-            ownArm11(0); // Don't init the screen
-        }
-        else // If DPAD_LEFT is held
-        {
+            payloadFound = 1;
             ownArm11(1); // Init the screen
             clearScreens();
             i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
+        } 
+        else if (HID_PAD = BUTTON_LEFT) 
+        {
+            payloadFound = 1;
+            ownArm11(1); // Init the screen
+            clearScreens();
+            i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
+        } 
+        else {
+            payloadFound = 1;
+            ownArm11(0); // Don't init the screen
         }
     }
     else //No payload found/no SD inserted
