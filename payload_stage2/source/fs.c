@@ -23,6 +23,21 @@ u32 mountCTRNAND(void)
     return f_mount(&fs, "1:", 1) != FR_OK;
 }
 
+u32 fileCheck(const char *path)
+{
+    FIL file;
+    u32 size;
+
+    if(f_open(&file, path, FA_READ) == FR_OK)
+    {
+        size = f_size(&file);
+        f_close(&file);
+    }
+    else size = 0;
+
+    return size;
+}
+
 u32 fileRead(void *dest, const char *path)
 {
     FIL file;

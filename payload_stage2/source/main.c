@@ -51,7 +51,12 @@ void main(void)
     else if(fileRead((void *)PAYLOAD_ADDRESS, "boot.bin"))
     {
         payloadFound = 1;
-        if (HID_PAD != BUTTON_LEFT) // If DPAD_LEFT is not held
+        if (fileCheck("ShadowNAND/screeninit")){
+            ownArm11(1); // Init the screen
+            clearScreens();
+            i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
+        }
+        else if (HID_PAD != BUTTON_LEFT) // If DPAD_LEFT is not held
         {
             ownArm11(0); // Don't init the screen
         }
