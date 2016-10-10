@@ -40,15 +40,15 @@ void main(void)
 
     u32 payloadFound;
 
-    if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/a9nc.bin")) // Full A9NC support
+    if(fileRead((void *)PAYLOAD_ADDRESS, "a9nc.bin")) // Full A9NC support
     {
         payloadFound = 1;
         ownArm11(1);
         clearScreens();
         i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
-        f_unlink("homebrew/3ds/a9nc.bin");
+        f_unlink("a9nc.bin");
     }
-    else if(fileRead((void *)PAYLOAD_ADDRESS, "homebrew/3ds/boot.bin"))
+    else if(fileRead((void *)PAYLOAD_ADDRESS, "boot.bin"))
     {
         payloadFound = 1;
         if (HID_PAD != BUTTON_LEFT) // If DPAD_LEFT is not held

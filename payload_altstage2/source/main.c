@@ -39,7 +39,7 @@ void main()
     unsigned int br;
 
     f_mount(&fs, "0:", 0); //This never fails due to deferred mounting
-    if(f_open(&payload, "homebrew/3ds/bootmgr.bin", FA_READ) == FR_OK)
+    if(f_open(&payload, "shadownand/bootmgr.bin", FA_READ) == FR_OK)
     {
         prepareForBoot();
         f_read(&payload, (void *)PAYLOAD_ADDRESS, f_size(&payload), &br);
