@@ -14,6 +14,15 @@
 #define A11_PAYLOAD_LOC 0x1FFF4C80 //Keep in mind this needs to be changed in the ld script for arm11 too
 #define A11_ENTRY       0x1FFFFFF8
 
+
+
+const char payloads[4][32] = {
+    "boot_si.bin",
+    "boot.bin",
+    "ShadowNAND/boot.bin",
+    "homebrew/3ds/boot.bin"
+};
+
 static void ownArm11(u32 screenInit)
 {
     memcpy((void *)A11_PAYLOAD_LOC, arm11_bin, arm11_bin_size);
@@ -34,11 +43,36 @@ static inline void clearScreens(void)
     memset32((void *)0x18346500, 0, 0x38400);
 }
 
+u32 payloadIsOnSD(u32 index){
+    u32 res;
+
+    for (int i = 0; i < 4; ++i)
+    {
+        if(fileCheck(payloads[i])){
+            if (index) // get file index
+            {
+                res = i;
+            }
+            else{ // get file availability
+                res = 1; // if file exists but doesn't enforce SI
+                if (i == 0)
+                {
+                    res = 2; // if file exists AND enforces SI
+                }
+            }
+            break;
+        }
+    }
+    return res;
+}
+
 void main(void)
 {
     mountSD();
 
     u32 payloadFound;
+    u32 payloadExists;
+    u32 screenInit;
 
     if(fileRead((void *)PAYLOAD_ADDRESS, "a9nc.bin")) // Full A9NC support
     {
@@ -48,24 +82,51 @@ void main(void)
         i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
         f_unlink("a9nc.bin");
     }
-    else if(fileRead((void *)PAYLOAD_ADDRESS, "boot.bin"))
+    else
     {
-        payloadFound = 1;
-        if (HID_PAD != BUTTON_LEFT) // If DPAD_LEFT is not held
+        payloadExists = payloadIsOnSD(0); // check file availability
+        if(payloadExists)
         {
-            ownArm11(0); // Don't init the screen
+            if(fileRead((void *)PAYLOAD_ADDRESS, payloads[payloadIsOnSD(1)])) // try to read the existing file in to the memory
+            {
+                payloadFound = 1;
+                if (payloadExists == 2)
+                {
+                    screenInit = 1;
+                }
+                else if (fileCheck("ShadowNAND/screeninit")){
+                    screenInit = 1;
+                }
+                else
+                {
+                    if (HID_PAD != BUTTON_LEFT) // If DPAD_LEFT is not held
+                    {
+                        screenInit = 0;
+                    }
+                    else // If DPAD_LEFT is held
+                    {
+                        screenInit = 1;
+                    }
+                }
+
+                if (screenInit == 0)
+                {
+                    ownArm11(0); // Don't init the screen
+                }
+
+                if (screenInit == 1)// If DPAD_LEFT is held
+                {
+                    ownArm11(1); // Init the screen
+                    clearScreens();
+                    i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
+                }
+            }
         }
-        else // If DPAD_LEFT is held
+        else //No payload found/no SD inserted
         {
-            ownArm11(1); // Init the screen
-            clearScreens();
-            i2cWriteRegister(3, 0x22, 0x2A); //Turn on backlight
+            payloadFound = 0;
+            ownArm11(0);
         }
-    }
-    else //No payload found/no SD inserted
-    {
-        payloadFound = 0;
-        ownArm11(0);
     }
 
     //Jump to payload
